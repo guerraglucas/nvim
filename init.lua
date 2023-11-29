@@ -179,3 +179,4 @@ vim.o.timeoutlen = 300
 --vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 vim.g.copilot_assume_mapped = true
+vim.api.nvim_set_option("clipboard","unnamed")
