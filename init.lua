@@ -46,7 +46,7 @@ require("packer").startup(function(use)
 end)
 
 -- some
-vim.keymap.set("n", "<D-b>", ":Ex<CR>")
+vim.keymap.set("n", "<C-b>", ":Ex<CR>")
 
 -- split screen and navigation
 vim.keymap.set("n", "<leader>v", ":vsplit<CR><C-w>l", { noremap = true })
@@ -63,8 +63,16 @@ vim.keymap.set('n', '<leader>f', function()
     })
 end, { desc = '[/] Fuzzily search in current buffer' })
 
+local telescope = require('telescope')
+telescope.setup {
+	pickers = {
+		find_files = {
+			hidden = true,
+		},
+	},
+}
 vim.keymap.set('n', '<leader>p', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<D-p>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<C-p>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
@@ -136,7 +144,7 @@ require("nvim_comment").setup({
 require("toggleterm").setup{
 	direction = "horizontal",
 	size = 90,
-	open_mapping = [[<D-j>]]
+	open_mapping = [[<C-j>]]
 }
 
 -- COLORSCHEME
