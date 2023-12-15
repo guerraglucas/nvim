@@ -5,6 +5,8 @@ vim.g.mapleader = " "
 require("packer").startup(function(use)
 	use { "wbthomason/packer.nvim" }
 	use { "ellisonleao/gruvbox.nvim" }
+	use { "catppuccin/nvim", as = "catppuccin" }
+	use { "github/copilot.vim" }
 	use('nvim-treesitter/nvim-treesitter', {run = ':TSUpdate'})
 	use {
 		'nvim-telescope/telescope.nvim', tag = '0.1.4',
@@ -38,8 +40,22 @@ require("packer").startup(function(use)
 		{'L3MON4D3/LuaSnip'},             -- Required
 		{'rafamadriz/friendly-snippets'}, -- Optional
   	},
+	use 'mfussenegger/nvim-dap',
+	use { "folke/neodev.nvim", opts = {} },
+	use 'leoluz/nvim-dap-go', -- Install the plugin with Packer
+	use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} },
+	use {
+ 		 "nvim-neo-tree/neo-tree.nvim",
+   		 branch = "v3.x",
+    		requires = { 
+      		"nvim-lua/plenary.nvim",
+      		"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+      		"MunifTanjim/nui.nvim",
+      		-- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+    		}
+ 	 },
 	use {"akinsho/toggleterm.nvim", tag = '*' },
-	use "jhlgns/naysayer88.vim",
+	-- use "jhlgns/naysayer88.vim",
 	use "terrortylor/nvim-comment",
 	use "CreaturePhil/vim-handmade-hero"
 }
@@ -62,29 +78,33 @@ vim.keymap.set('n', '<leader>f', function()
   		previewer = false,
     })
 end, { desc = '[/] Fuzzily search in current buffer' })
-
 local telescope = require('telescope')
 telescope.setup {
 	pickers = {
 		find_files = {
-			hidden = true,
-		},
-	},
+			hidden = true
+		}
+	}
 }
-vim.keymap.set('n', '<leader>p', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+
+vim.keymap.set('n', '<leader>p', require("telescope.builtin").find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<C-p>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set("i", "jj", "<Esc>")
 
 -- TREESITTER
 require'nvim-treesitter.configs'.setup {
 	ensure_installed = {"c", "lua", "vim", "go", "javascript", "typescript", "rust"},
 	highlight = {
-		enable = false,
+		enable = true,
 	}
 }
+
+-- COPILOT
+-- require("copilot").setup()
 
 -- GRUVBOX
 require("gruvbox").setup({
@@ -94,11 +114,59 @@ require("gruvbox").setup({
 	}
 })
 
+-- catppuccin
+require("catppuccin").setup({
+    flavour = "mocha", -- latte, frappe, macchiato, mocha
+    background = { -- :h background
+        light = "latte",
+        dark = "mocha",
+    },
+    transparent_background = false, -- disables setting the background color.
+    show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
+    term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
+    dim_inactive = {
+        enabled = false, -- dims the background color of inactive window
+        shade = "dark",
+        percentage = 0.15, -- percentage of the shade to apply to the inactive window
+    },
+    no_italic = false, -- Force no italic
+    no_bold = false, -- Force no bold
+    no_underline = false, -- Force no underline
+    styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
+        comments = { "italic" }, -- Change the style of comments
+        conditionals = { "italic" },
+        loops = {},
+        functions = {},
+        keywords = {},
+        strings = {},
+        variables = {},
+        numbers = {},
+        booleans = {},
+        properties = {},
+        types = {},
+        operators = {},
+    },
+    color_overrides = {},
+    custom_highlights = {},
+    integrations = {
+        cmp = true,
+        gitsigns = true,
+        nvimtree = true,
+        treesitter = true,
+        notify = false,
+        mini = {
+            enabled = true,
+            indentscope_color = "",
+        },
+        -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+    },
+})
+
 -- LUALINE
 require("lualine").setup{
 	options = {
 		icons_enabled = false,
-		theme = "onedark",
+		theme = "catppuccin",
 		component_separators = "|",
 		section_separators = "",
 	},
@@ -137,18 +205,45 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 
 -- COMMENT
 require("nvim_comment").setup({
-	operator_mapping = "<leader>/"
+	operator_mapping = "<leader>]"
 })
 
 -- TERMINAL SETUP
 require("toggleterm").setup{
 	direction = "horizontal",
-	size = 90,
-	open_mapping = [[<C-j>]]
+	size = 20,
+	open_mapping = [[<C-j>]],
+	autochdir = true
 }
 
+-- GO-DAP SETUP
+require("dap-go").setup()
+require('dap.ext.vscode').load_launchjs('.vscode/launch.json',{})
+local dap, dapui =require("dap"),require("dapui")
+dapui.setup()
+dap.listeners.after.event_initialized["dapui_config"]=function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"]=function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"]=function()
+  dapui.close()
+end
+require("neodev").setup({
+  library = { plugins = { "nvim-dap-ui" }, types = true },
+  ...
+})
+vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
+vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
+vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
+vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
+vim.keymap.set('n', '<leader>b', function() require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<F6>', function() require('dap').debug_test() end)
+vim.keymap.set('n', '<F4>', function() require('dap').debug_last() end)
 -- COLORSCHEME
-vim.cmd("colorscheme gruvbox")
+vim.cmd("colorscheme catppuccin")
+
 -- Adding the same comment color in each theme
 vim.cmd([[
 	augroup CustomCommentCollor
@@ -156,26 +251,18 @@ vim.cmd([[
 		autocmd VimEnter * hi Comment guifg=#2ea542
 	augroup END
 ]])
-
--- Disable annoying match brackets and all the jaz
--- vim.cmd([[
--- 	augroup CustomHI
--- 		autocmd!
--- 		autocmd VimEnter * NoMatchParen 
--- 	augroup END
--- ]])
-
 vim.o.background = "dark"
 
-vim.keymap.set("i", "jj", "<Esc>")
+-- MISC 
 
+vim.fn.sign_define('DapBreakpoint',{ text ='🟥', texthl ='', linehl ='', numhl =''})
+vim.fn.sign_define('DapStopped',{ text ='▶️', texthl ='', linehl ='', numhl =''})
 vim.opt.guicursor = "i:block"
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.number = false
 vim.opt.relativenumber = true
 vim.opt.swapfile = false
-
 vim.o.hlsearch = true
 vim.o.mouse = 'a'
 vim.o.breakindent = true
@@ -188,3 +275,5 @@ vim.o.timeoutlen = 300
 vim.o.termguicolors = true
 vim.g.copilot_assume_mapped = true
 vim.api.nvim_set_option("clipboard","unnamed")
+vim.g.copilot_no_tab_map = true
+vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
