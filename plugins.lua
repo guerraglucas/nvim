@@ -41,8 +41,8 @@ local plugins = {
     "olexsmir/gopher.nvim",
     ft = "go",
     config = function(_, opts)
-      require("gopher").setup(opts)
       require("core.utils").load_mappings("gopher")
+      require("gopher").setup(opts)
     end,
     build = function()
       vim.cmd [[silent! GoInstallDeps]]
@@ -57,6 +57,27 @@ local plugins = {
       vim.g.copilot_tab_fallback = "";  -- The mapping is set to other key, see custom/lua/mappings  
       -- or run <leader>ch to see copilot mapping section  
       end
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    opts = {},
+    init = function(_, opts)
+      -- setup dap config by VsCode launch.json file
+      -- require("dap.ext.vscode").load_launchjs()
+      -- local dap = require("dap")
+      require("core.utils").load_mappings("dapui")
+      local dapui = require("dapui")
+      dapui.setup(opts)
+      -- dap.listeners.after.event_initialized["dapui_config"] = function()
+      --   dapui.open({})
+      -- end
+      -- dap.listeners.before.event_terminated["dapui_config"] = function()
+      --   dapui.close({})
+      -- end
+      -- dap.listeners.before.event_exited["dapui_config"] = function()
+      --   dapui.close({})
+      -- end
+    end,
   },
   {
     "f-person/git-blame.nvim",

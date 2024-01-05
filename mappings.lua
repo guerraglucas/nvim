@@ -48,6 +48,25 @@ M.dap_go = {
   }
 }
 
+M.dapui = {
+  plugin = true,
+  n = {
+    ["<leader>duh"] = {
+      function()
+        require("dapui").toggle({ })
+      end,
+      "Toggle debugging UI"
+    },
+    ["<leader>due"] = {
+      function()
+        require("dapui").eval()
+      end,
+      "Eval",
+      mode = {"n", "v"}
+    }
+  }
+}
+
 M.gopher = {
   plugin = true,
   n = {
