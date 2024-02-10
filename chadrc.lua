@@ -1,7 +1,7 @@
 ---@type ChadrcConfig
 local M = {}
 
-M.ui = { 
+M.ui = {
   theme = 'gruvbox',
   transparency = true,
 }
