@@ -3,7 +3,7 @@ local plugins = {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
-        "lua-language-server"
+        "lua-language-server",
       },
     },
   },
@@ -41,8 +41,8 @@ local plugins = {
     "olexsmir/gopher.nvim",
     ft = "go",
     config = function(_, opts)
-      require("core.utils").load_mappings("gopher")
       require("gopher").setup(opts)
+      require("core.utils").load_mappings("gopher")
     end,
     build = function()
       vim.cmd [[silent! GoInstallDeps]]
@@ -59,9 +59,11 @@ local plugins = {
       end
   },
   {
+    "nvim-neotest/nvim-nio",
+  },
+  {
     "rcarriga/nvim-dap-ui",
     opts = {},
-    dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"},
     init = function(_, opts)
       -- setup dap config by VsCode launch.json file
       -- require("dap.ext.vscode").load_launchjs()
