@@ -38,17 +38,6 @@ local plugins = {
     end,
   },
   {
-    "olexsmir/gopher.nvim",
-    ft = "go",
-    config = function(_, opts)
-      require("gopher").setup(opts)
-      require("core.utils").load_mappings("gopher")
-    end,
-    build = function()
-      vim.cmd [[silent! GoInstallDeps]]
-    end,
-  },
-  {
       "github/copilot.vim",
       lazy = false,
       config = function()  -- Mapping tab is already used by NvChad       
