@@ -31,7 +31,6 @@ return {
                 "golangci-lint",
                 "eslint_d",
                 "luacheck", -- Lua linting
-                "pint",     -- Laravel Pint for PHP (formatting & linting)
 
                 -- Additional useful tools
                 "delve",      -- Go debugger
